@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlackTea POS</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>BlackTea</h1>
+    <div class="top-buttons">
+      <button id="settingsBtn">⚙️</button>
+      <button id="historyBtn">📜</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="customer-options">
+      <button id="takeawayBtn">Khách mang về</button>
+      <button id="dineinBtn">Khách tại quán</button>
+    </div>
+    <div id="tables"></div>
+  </main>
+
+  <!-- Popup chọn bàn -->
+  <div id="tablePopup" class="popup hidden">
+    <div class="popup-content">
+      <h2>Chọn bàn</h2>
+      <div class="table-grid">
+        <div class="row">
+          <button class="table-btn" data-table="L1">L1</button>
+          <button class="table-btn" data-table="L2">L2</button>
+          <button class="table-btn" data-table="L3">L3</button>
+          <button class="table-btn" data-table="L4">L4</button>
+        </div>
+        <div class="row center">
+          <button class="table-btn" data-table="NT1">NT1</button>
+          <button class="table-btn" data-table="NT2">NT2</button>
+        </div>
+        <div class="row three-cols">
+          <div>
+            <button class="table-btn" data-table="T1">T1</button>
+            <button class="table-btn" data-table="T2">T2</button>
+            <button class="table-btn" data-table="T3">T3</button>
+            <button class="table-btn" data-table="T4">T4</button>
+          </div>
+          <div>
+            <button class="table-btn" data-table="G1">G1</button>
+            <button class="table-btn" data-table="G2">G2</button>
+            <button class="table-btn" data-table="G3">G3</button>
+            <button class="table-btn" data-table="G4">G4</button>
+          </div>
+          <div>
+            <button class="table-btn" data-table="N1">N1</button>
+            <button class="table-btn" data-table="N2">N2</button>
+            <button class="table-btn" data-table="N3">N3</button>
+            <button class="table-btn" data-table="N4">N4</button>
+          </div>
+        </div>
+      </div>
+      <div class="popup-actions">
+        <button id="cancelPopup">Hủy</button>
+        <button id="confirmPopup">Chọn bàn</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
