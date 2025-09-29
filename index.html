@@ -1,67 +1,124 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BlackTea POS</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>BlackTea POS v10.1</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>BlackTea</h1>
-    <div class="top-buttons">
-      <button id="settingsBtn">⚙️</button>
-      <button id="historyBtn">📜</button>
-    </div>
-  </header>
+  <div class="app">
+    <header style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
+      <h1 id="brand" style="cursor:pointer">BlackTea POS</h1>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-light" id="history-btn" title="Lịch sử">📜</button>
+        <button class="btn btn-light" id="settings-btn" title="Cài đặt">⚙️</button>
+      </div>
+    </header>
 
-  <main>
-    <div class="customer-options">
-      <button id="takeawayBtn">Khách mang về</button>
-      <button id="dineinBtn">Khách tại quán</button>
-    </div>
-    <div id="tables"></div>
-  </main>
+    <main id="table-screen">
+      <div style="margin-bottom:10px">
+        <button id="guest-btn" class="btn btn-primary">Khách mang về</button>
+        <button id="dinein-btn" class="btn btn-secondary">Khách tại quán</button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+        <input id="new-table-name" placeholder="Nhập tên bàn (VD: VIP 1)" />
+        <button id="add-table-btn" class="btn btn-secondary">+ Thêm bàn</button>
+      </div>
+      <h2>Bàn đang phục vụ</h2>
+      <div id="tables" class="table-grid"></div>
+    </main>
 
-  <!-- Popup chọn bàn -->
-  <div id="tablePopup" class="popup hidden">
-    <div class="popup-content">
-      <h2>Chọn bàn</h2>
-      <div class="table-grid">
-        <div class="row">
-          <button class="table-btn" data-table="L1">L1</button>
-          <button class="table-btn" data-table="L2">L2</button>
-          <button class="table-btn" data-table="L3">L3</button>
-          <button class="table-btn" data-table="L4">L4</button>
-        </div>
-        <div class="row center">
-          <button class="table-btn" data-table="NT1">NT1</button>
-          <button class="table-btn" data-table="NT2">NT2</button>
-        </div>
-        <div class="row three-cols">
-          <div>
-            <button class="table-btn" data-table="T1">T1</button>
-            <button class="table-btn" data-table="T2">T2</button>
-            <button class="table-btn" data-table="T3">T3</button>
-            <button class="table-btn" data-table="T4">T4</button>
+    <!-- menu / order screen (hidden by default) -->
+    <main id="menu-screen" style="display:none">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <button class="btn btn-light" onclick="backToTables()">← Quay lại</button>
+        <h2 id="table-title" style="margin:0"></h2>
+      </div>
+
+      <div id="category-bar" class="category-bar"></div>
+      <div id="menu-list" class="menu-list" style="display:none"></div>
+
+      <section class="cart-section">
+        <h3>Hóa đơn</h3>
+        <ul id="cart-list" class="cart-list"></ul>
+        <div class="cart-summary">
+          <div>Tổng: <span id="total">0</span> VND</div>
+          <div class="cart-actions" id="primary-actions" style="display:none">
+            <button id="cancel-order-btn" class="btn btn-action">Hủy đơn</button>
+            <button id="save-btn" class="btn btn-action primary">Lưu đơn</button>
           </div>
-          <div>
-            <button class="table-btn" data-table="G1">G1</button>
-            <button class="table-btn" data-table="G2">G2</button>
-            <button class="table-btn" data-table="G3">G3</button>
-            <button class="table-btn" data-table="G4">G4</button>
+          <div class="cart-actions" id="table-actions" style="display:none">
+            <button id="addmore-btn" class="btn btn-action">+ Thêm món</button>
+            <button id="pay-btn" class="btn btn-action primary">Thanh toán</button>
           </div>
-          <div>
-            <button class="table-btn" data-table="N1">N1</button>
-            <button class="table-btn" data-table="N2">N2</button>
-            <button class="table-btn" data-table="N3">N3</button>
-            <button class="table-btn" data-table="N4">N4</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- payment screen -->
+    <main id="payment-screen" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2>Thanh toán - <span id="pay-table-name"></span></h2>
+        <button class="btn btn-light" onclick="closePayment()">← Quay lại</button>
+      </div>
+      <div id="pay-bill" style="margin-top:8px"></div>
+      <div style="margin-top:8px">
+        <label>Chiết khấu: <input id="discount-input" placeholder="0 hoặc 5%" /></label>
+      </div>
+      <div style="margin-top:8px;font-weight:700">Tổng sau chiết khấu: <span id="pay-final-total">0</span> VND</div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn btn-secondary" onclick="closePayment()">Quay lại</button>
+        <button class="btn btn-primary" onclick="confirmPayment()">Xuất hóa đơn</button>
+      </div>
+    </main>
+
+    <!-- settings, menu-settings, printer-settings, history screens omitted for brevity (app.js controls them) -->
+    <main id="settings-screen" style="display:none"></main>
+    <main id="menu-settings-screen" style="display:none"></main>
+    <main id="printer-settings-screen" style="display:none"></main>
+    <main id="history-screen" style="display:none"></main>
+  </div>
+
+  <!-- choose-table popup (dine-in) -->
+  <div id="choose-table-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Chọn bàn - Khách tại quán</h3>
+      <div class="table-grid-popup">
+        <div class="row l-row">
+          <button class="table-btn" data-name="L1">L1</button>
+          <button class="table-btn" data-name="L2">L2</button>
+          <button class="table-btn" data-name="L3">L3</button>
+          <button class="table-btn" data-name="L4">L4</button>
+        </div>
+        <div class="row nt-row center">
+          <button class="table-btn" data-name="NT1">NT1</button>
+          <button class="table-btn" data-name="NT2">NT2</button>
+        </div>
+        <div class="three-col">
+          <div class="col">
+            <button class="table-btn" data-name="T1">T1</button>
+            <button class="table-btn" data-name="T2">T2</button>
+            <button class="table-btn" data-name="T3">T3</button>
+            <button class="table-btn" data-name="T4">T4</button>
+          </div>
+          <div class="col">
+            <button class="table-btn" data-name="G1">G1</button>
+            <button class="table-btn" data-name="G2">G2</button>
+            <button class="table-btn" data-name="G3">G3</button>
+            <button class="table-btn" data-name="G4">G4</button>
+          </div>
+          <div class="col">
+            <button class="table-btn" data-name="N1">N1</button>
+            <button class="table-btn" data-name="N2">N2</button>
+            <button class="table-btn" data-name="N3">N3</button>
+            <button class="table-btn" data-name="N4">N4</button>
           </div>
         </div>
       </div>
-      <div class="popup-actions">
-        <button id="cancelPopup">Hủy</button>
-        <button id="confirmPopup">Chọn bàn</button>
+      <div class="modal-actions">
+        <button id="cancel-choose">Hủy bàn</button>
+        <button id="confirm-choose">Chọn bàn</button>
       </div>
     </div>
   </div>
